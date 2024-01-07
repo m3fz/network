@@ -1,0 +1,28 @@
+version: '3.3'
+services:
+  network-backend:
+    image: network:0.0.1
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - network-db
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://network-db/network
+
+  network-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: network
+      POSTGRES_PASSWORD: network
+    ports:
+      - "15432:5432"
+    volumes:
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  db-data:
