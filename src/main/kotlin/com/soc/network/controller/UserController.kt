@@ -24,6 +24,15 @@ class UserController(
         return userService.getUserByUuid(uuid)
     }
 
+    @GetMapping("/search")
+    @Operation(description = "Поиск анкет")
+    fun findUser(
+        @RequestParam("first_name") firstname: String,
+        @RequestParam("last_name") lastname: String
+    ): List<UserDto> {
+        return userService.findUsers(firstname, lastname)
+    }
+
     @PostMapping("/register")
     @Operation(description = "Регистрация нового пользователя")
     fun createUser(@RequestBody userDto: UserDto): UserUuidDto {

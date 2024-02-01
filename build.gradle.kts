@@ -33,9 +33,8 @@ dependencies {
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.liquibase:liquibase-core:4.25.1")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
-	compileOnly("org.projectlombok:lombok")
 	runtimeOnly("org.postgresql:postgresql")
-	annotationProcessor("org.projectlombok:lombok")
+//	runtimeOnly("io.github.oshai:kotlin-logging-jvm:6.0.3")
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

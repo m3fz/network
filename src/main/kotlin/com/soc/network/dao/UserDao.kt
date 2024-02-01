@@ -3,9 +3,11 @@ package com.soc.network.dao
 import com.soc.network.model.GenderType
 import com.soc.network.model.UserEntity
 import org.springframework.dao.EmptyResultDataAccessException
-import org.springframework.jdbc.core.JdbcTemplate
-import org.springframework.jdbc.core.RowMapper
+import org.springframework.jdbc.core.*
 import org.springframework.stereotype.Service
+import org.springframework.transaction.annotation.Transactional
+import java.sql.PreparedStatement
+import java.sql.SQLException
 import java.sql.Types
 import java.util.*
 
@@ -15,6 +17,10 @@ class UserDao(
 ) {
     val createUserSql = "insert into users(uuid, username, password_hash, enabled, firstname, lastname, age, gender, interests, city) " +
             "values(?,?,?,?,?,?,?,?,?,?)"
+
+    fun hasUsers(): Boolean {
+        return jdbcTemplate.queryForObject("select count(*) from users", Int::class.java)!! > 0
+    }
 
     fun getUserByUuid(uuid: UUID): UserEntity? {
         val sql = "select * from users where uuid = '$uuid'"
@@ -34,6 +40,43 @@ class UserDao(
         } catch (e: EmptyResultDataAccessException) {
             null
         }
+    }
+
+    fun findUsersByName(firstname: String, lastname: String): List<UserEntity> {
+        val sql = "select * from users where firstname like '$firstname%' and lastname like '$lastname%'"
+
+        return try {
+            jdbcTemplate.query(sql, userRowMapper)
+        } catch (e: Exception) {
+            emptyList()
+        }
+    }
+
+    @Transactional
+    fun createUsers(userEntities: List<UserEntity>) {
+        jdbcTemplate.batchUpdate(createUserSql, object : BatchPreparedStatementSetter {
+            @Throws(SQLException::class)
+            override fun setValues(ps: PreparedStatement, i: Int) {
+                ps.setObject(1, userEntities[i].uuid)
+                ps.setString(2, userEntities[i].username)
+                ps.setString(3, userEntities[i].password)
+                ps.setBoolean(4, userEntities[i].isEnabled)
+                ps.setString(5, userEntities[i].firstname)
+                ps.setString(6, userEntities[i].lastname)
+                if (userEntities[i].age == null) {
+                    ps.setNull(7, Types.INTEGER)
+                } else {
+                    ps.setInt(7, userEntities[i].age!!)
+                }
+                ps.setString(8, userEntities[i].gender?.toString())
+                ps.setString(9, userEntities[i].interests)
+                ps.setString(10, userEntities[i].city)
+            }
+
+            override fun getBatchSize(): Int {
+                return userEntities.size
+            }
+        })
     }
 
     fun createUser(userEntity: UserEntity) {

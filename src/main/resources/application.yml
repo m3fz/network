@@ -3,7 +3,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres
+    url: jdbc:postgresql://localhost:5432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
     username: network
     password: network
     type: com.zaxxer.hikari.HikariDataSource
@@ -21,3 +21,5 @@ spring:
 springdoc:
   api-docs:
     enabled: true
+
+generate-data: false
