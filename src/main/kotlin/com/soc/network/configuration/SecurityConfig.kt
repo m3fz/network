@@ -39,7 +39,7 @@ class SecurityConfig(val customUserDetailsService: CustomUserDetailsService) {
 
     @Bean
     fun passwordEncoder(): PasswordEncoder {
-        return BCryptPasswordEncoder(10, SecureRandom())
+        return BCryptPasswordEncoder(4, SecureRandom())
     }
 
     @Bean

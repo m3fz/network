@@ -1,3 +1,5 @@
 databaseChangeLog:
   - include:
       file: /db/changelog/user.sql
+  - include:
+      file: /db/changelog/2024-02-03_user_add_idx.sql

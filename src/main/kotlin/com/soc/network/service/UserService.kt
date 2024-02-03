@@ -51,6 +51,7 @@ class UserService(
 
         return userDao.findUsersByName(firstname, lastname).parallelStream()
             .map { convertToDto(it) }
+            .sorted(compareBy { it.uuid })
             .toList()
     }
 

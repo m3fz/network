@@ -1,0 +1,1 @@
+CREATE INDEX users_firstname_lastname_idx ON users(lastname text_pattern_ops, firstname text_pattern_ops);
