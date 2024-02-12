@@ -3,11 +3,18 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
-    username: network
-    password: network
-    type: com.zaxxer.hikari.HikariDataSource
-    driver-class-name: org.postgresql.Driver
+    master:
+      url: jdbc:postgresql://localhost:5432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
+      username: network
+      password: network
+      type: com.zaxxer.hikari.HikariDataSource
+      driver-class-name: org.postgresql.Driver
+    replica:
+      url: jdbc:postgresql://localhost:15432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
+      username: network
+      password: network
+      type: com.zaxxer.hikari.HikariDataSource
+      driver-class-name: org.postgresql.Driver
   jpa:
     hibernate:
       ddl-auto: none

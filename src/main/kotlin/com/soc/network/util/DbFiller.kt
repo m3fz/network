@@ -9,7 +9,7 @@ import org.springframework.dao.DuplicateKeyException
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Component
 import java.time.LocalDate
-import java.util.*
+import java.util.concurrent.atomic.AtomicInteger
 import kotlin.random.Random
 
 @Component
@@ -20,6 +20,7 @@ class DbFiller(
 ) {
     private val interests: List<String> = listOf("cats", "dogs", "auto", "motorcycle", "cooking", "gardening", "video-games", "movies", "football", "hockey", "basketball", "books")
     private val fileLines: List<String> = mutableListOf()
+    private var insertsCount: AtomicInteger = AtomicInteger()
 
     @PostConstruct
     fun fill() {
@@ -31,7 +32,7 @@ class DbFiller(
         }
         println("Starting fill the DB")
         fileLines.asSequence().chunked(150).forEach { handleLinesChunk(it)}
-        println("Finished filling the DB")
+        println("Finished filling the DB. Total is: ${insertsCount.get()}")
     }
 
     private fun handleLinesChunk(lines: List<String>) {
@@ -41,7 +42,8 @@ class DbFiller(
                 .toList()
             println("Created users chunk")
             userDao.createUsers(userEntities)
-            println("Saved users chunk")
+            val total = insertsCount.addAndGet(150)
+            println("Saved users chunk. Total is $total")
         } catch (e: DuplicateKeyException) {
             println("Got duplicated username in chunk, generating it again. " + e.message)
             handleLinesChunk(lines)
@@ -54,7 +56,8 @@ class DbFiller(
         val username = makeUsername(params[0], params[1].toInt())
         val entity = UserEntity(
             username = username,
-            passwordHash = Base64.getEncoder().encodeToString(username.toByteArray())
+//            passwordHash = Base64.getEncoder().encodeToString(username.toByteArray())
+            passwordHash = passwordEncoder.encode(username)
         )
         entity.lastname = nameParts[0]
         entity.firstname = nameParts[1]

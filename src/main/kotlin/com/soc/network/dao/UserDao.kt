@@ -2,6 +2,7 @@ package com.soc.network.dao
 
 import com.soc.network.model.GenderType
 import com.soc.network.model.UserEntity
+import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.*
 import org.springframework.stereotype.Service
@@ -13,20 +14,21 @@ import java.util.*
 
 @Service
 class UserDao(
-    private val jdbcTemplate: JdbcTemplate
+    private val jdbcTemplate: JdbcTemplate,
+    @Qualifier("roJdbcTemplate") private val roJdbcTemplate: JdbcTemplate
 ) {
     val createUserSql = "insert into users(uuid, username, password_hash, enabled, firstname, lastname, age, gender, interests, city) " +
             "values(?,?,?,?,?,?,?,?,?,?)"
 
     fun hasUsers(): Boolean {
-        return jdbcTemplate.queryForObject("select count(*) from users", Int::class.java)!! > 0
+        return roJdbcTemplate.queryForObject("select count(*) from users", Int::class.java)!! > 0
     }
 
     fun getUserByUuid(uuid: UUID): UserEntity? {
         val sql = "select * from users where uuid = '$uuid'"
 
         return try {
-            jdbcTemplate.queryForObject(sql, userRowMapper)
+            roJdbcTemplate.queryForObject(sql, userRowMapper)
         } catch (e: EmptyResultDataAccessException) {
             null
         }
@@ -36,7 +38,7 @@ class UserDao(
         val sql = "select * from users where username = '$username'"
 
         return try {
-            jdbcTemplate.queryForObject(sql, userRowMapper)
+            roJdbcTemplate.queryForObject(sql, userRowMapper)
         } catch (e: EmptyResultDataAccessException) {
             null
         }
@@ -46,7 +48,7 @@ class UserDao(
         val sql = "select * from users where firstname like '$firstname%' and lastname like '$lastname%'"
 
         return try {
-            jdbcTemplate.query(sql, userRowMapper)
+            roJdbcTemplate.query(sql, userRowMapper)
         } catch (e: Exception) {
             emptyList()
         }
