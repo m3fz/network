@@ -1,5 +1,6 @@
-package com.soc.network.model
+package com.soc.network.model.entity
 
+import com.soc.network.model.GenderType
 import org.springframework.security.core.GrantedAuthority
 import org.springframework.security.core.authority.SimpleGrantedAuthority
 import org.springframework.security.core.userdetails.UserDetails

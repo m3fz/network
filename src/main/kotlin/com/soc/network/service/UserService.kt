@@ -1,9 +1,9 @@
 package com.soc.network.service
 
 import com.soc.network.dao.UserDao
-import com.soc.network.model.UserEntity
 import com.soc.network.model.dto.UserDto
 import com.soc.network.model.dto.UserUuidDto
+import com.soc.network.model.entity.UserEntity
 import com.soc.network.model.error.UserCreateException
 import com.soc.network.model.error.UserNotExistsException
 import org.apache.coyote.BadRequestException

@@ -10,7 +10,7 @@ spring:
       type: com.zaxxer.hikari.HikariDataSource
       driver-class-name: org.postgresql.Driver
     replica:
-      url: jdbc:postgresql://localhost:15432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
+      url: jdbc:postgresql://localhost:5432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
       username: network
       password: network
       type: com.zaxxer.hikari.HikariDataSource
@@ -24,6 +24,14 @@ spring:
   liquibase:
     enabled: true
     change-log: classpath:/db/changelog-master.yml
+
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6379
+      password:
+      timeout: 1000
 
 springdoc:
   api-docs:

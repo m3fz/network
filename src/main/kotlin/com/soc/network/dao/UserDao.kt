@@ -1,7 +1,7 @@
 package com.soc.network.dao
 
 import com.soc.network.model.GenderType
-import com.soc.network.model.UserEntity
+import com.soc.network.model.entity.UserEntity
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.dao.EmptyResultDataAccessException
 import org.springframework.jdbc.core.*
@@ -17,7 +17,7 @@ class UserDao(
     private val jdbcTemplate: JdbcTemplate,
     @Qualifier("roJdbcTemplate") private val roJdbcTemplate: JdbcTemplate
 ) {
-    val createUserSql = "insert into users(uuid, username, password_hash, enabled, firstname, lastname, age, gender, interests, city) " +
+    private val createUserSql = "insert into users(uuid, username, password_hash, enabled, firstname, lastname, age, gender, interests, city) " +
             "values(?,?,?,?,?,?,?,?,?,?)"
 
     fun hasUsers(): Boolean {

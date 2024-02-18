@@ -3,3 +3,7 @@ databaseChangeLog:
       file: /db/changelog/user.sql
   - include:
       file: /db/changelog/2024-02-03_user_add_idx.sql
+  - include:
+      file: /db/changelog/2024-02-13_post_table.sql
+  - include:
+      file: /db/changelog/2024-02-13_friend_table.sql

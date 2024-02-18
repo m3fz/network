@@ -16,7 +16,7 @@ import java.util.*
 @SecurityRequirement(name = "basicAuth")
 class UserController(
     private val userService: UserService
-    ) {
+) {
 
     @GetMapping("/get/{uuid}")
     @Operation(description = "Получение данных анкеты пользователя")

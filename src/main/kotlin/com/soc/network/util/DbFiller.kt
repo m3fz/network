@@ -2,7 +2,7 @@ package com.soc.network.util
 
 import com.soc.network.dao.UserDao
 import com.soc.network.model.GenderType
-import com.soc.network.model.UserEntity
+import com.soc.network.model.entity.UserEntity
 import jakarta.annotation.PostConstruct
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty
 import org.springframework.dao.DuplicateKeyException
