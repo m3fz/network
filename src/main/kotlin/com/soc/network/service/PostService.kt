@@ -16,6 +16,7 @@ class PostService(
     val postDao: PostDao,
     private val feedCacheDao: FeedCacheDao,
     private val friendDao: FriendDao,
+    private val webSocketService: WebSocketService
 ) {
 
     fun createPost(postDto: PostDto, userUuid: UUID): UUID {
@@ -23,7 +24,7 @@ class PostService(
         postDao.createPost(postEntity)
 
         runBlocking {
-            launch { assembleFriendsFeeds(userUuid) }
+            launch { assembleFriendsFeedsOnCreate(userUuid, toDto(postEntity)) }
         }
 
         return postEntity.uuid
@@ -38,7 +39,7 @@ class PostService(
         postDao.updatePost(postEntity)
 
         runBlocking {
-            launch { assembleFriendsFeeds(userUuid) }
+            launch { assembleFriendsFeedsOnCreate(userUuid, toDto(postEntity)) }
         }
 
         return postEntity.uuid
@@ -48,7 +49,7 @@ class PostService(
         postDao.deletePost(uuid)
 
         runBlocking {
-            launch { assembleFriendsFeeds(uuid) }
+            launch { assembleFriendsFeedsOnDelete(uuid) }
         }
     }
 
@@ -79,9 +80,17 @@ class PostService(
             .also { feedCacheDao.saveFeed(uuid.toString(), it) }
     }
 
-    private suspend fun assembleFriendsFeeds(uuid: UUID) {
+    private suspend fun assembleFriendsFeedsOnCreate(uuid: UUID, postDto: PostDto) {
+        friendDao.findFriendedUsers(uuid).parallelStream()
+            .forEach {
+                assembleUserFeed(it.uuid)
+                webSocketService.sendPostToUser(it.username, postDto)
+            }
+    }
+
+    private suspend fun assembleFriendsFeedsOnDelete(uuid: UUID) {
             friendDao.findFriendedUsers(uuid).parallelStream()
-                .forEach { assembleUserFeed(it) }
+                .forEach { assembleUserFeed(it.uuid) }
     }
 
     private fun toDto(postEntity: PostEntity): PostDto {

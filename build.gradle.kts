@@ -36,7 +36,12 @@ dependencies {
 	implementation("org.liquibase:liquibase-core:4.25.1")
 	implementation("org.springdoc:springdoc-openapi-starter-webmvc-ui:2.3.0")
 	runtimeOnly("org.postgresql:postgresql")
-//	runtimeOnly("io.github.oshai:kotlin-logging-jvm:6.0.3")
+//	implementation("org.springframework:spring-websocket:6.1.4")
+//	implementation("org.springframework:spring-messaging:6.1.4")
+	implementation("org.springframework.boot:spring-boot-starter-websocket")
+	implementation("org.springframework.boot:spring-boot-starter-amqp")
+	implementation("org.springframework.boot:spring-boot-starter-reactor-netty")
+
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 

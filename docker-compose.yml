@@ -10,11 +10,13 @@ services:
     depends_on:
       - network-db
       - network-cache
+      - network-rabbitmq-stomp
     environment:
       - SERVER_PORT=8080
       - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db/network
       - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://network-db/network
       - SPRING_DATA_REDIS_HOST=network-cache
+      - SOCKET_RELAY_HOST=network-rabbitmq-stomp
 
   network-db:
     image: postgres:15-alpine
@@ -31,6 +33,16 @@ services:
     image: redis:7.2-alpine
     ports:
       - "6379:6379"
+    restart: unless-stopped
+
+  network-rabbitmq-stomp:
+    image: network-rabbitmq-stomp:0.0.1
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-rabbitmq
+    ports:
+       - "15672:15672"
+       - "61613:61613"
     restart: unless-stopped
 
 volumes:

@@ -33,6 +33,13 @@ spring:
       password:
       timeout: 1000
 
+socket:
+  relay:
+    host: localhost
+    port: 61613
+    login: guest
+    passcode: guest
+
 springdoc:
   api-docs:
     enabled: true
