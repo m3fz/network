@@ -7,3 +7,11 @@ databaseChangeLog:
       file: /db/changelog/2024-02-13_post_table.sql
   - include:
       file: /db/changelog/2024-02-13_friend_table.sql
+  - include:
+      file: /db/changelog/2024-03-21_dialog_message_table.sql
+  - include:
+      file: /db/changelog/2024-03-23_dialog_message_sharding.sql
+  - include:
+      file: /db/changelog/2024-03-23_dialog_message_sharding_1.sql
+  - include:
+      file: /db/changelog/2024-03-23_dialog_message_sharding_2.sql

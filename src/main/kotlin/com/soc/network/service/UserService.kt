@@ -7,6 +7,7 @@ import com.soc.network.model.entity.UserEntity
 import com.soc.network.model.error.UserCreateException
 import com.soc.network.model.error.UserNotExistsException
 import org.apache.coyote.BadRequestException
+import org.springframework.security.core.context.SecurityContextHolder
 import org.springframework.security.crypto.password.PasswordEncoder
 import org.springframework.stereotype.Service
 import java.util.*
@@ -53,6 +54,12 @@ class UserService(
             .map { convertToDto(it) }
             .sorted(compareBy { it.uuid })
             .toList()
+    }
+
+    fun getCurrentUuid(): UUID {
+        val user = SecurityContextHolder.getContext().authentication.principal as UserEntity
+
+        return user.uuid
     }
 
     private fun convertToDto(userEntity: UserEntity): UserDto {

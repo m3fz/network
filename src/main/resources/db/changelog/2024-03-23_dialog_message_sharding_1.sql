@@ -1,0 +1,1 @@
+SELECT citus_add_node('network_worker-db_1', 5432);

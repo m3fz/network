@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetailsService
 import org.springframework.stereotype.Service
 
 @Service
-class CustomUserDetailsService(val userDao: UserDao) : UserDetailsService {
+class CustomUserDetailsService(private val userDao: UserDao) : UserDetailsService {
 
     override fun loadUserByUsername(username: String?): UserDetails {
         try {
