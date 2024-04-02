@@ -8,36 +8,24 @@ services:
     ports:
       - "8080:8080"
     depends_on:
-      - master-db
-      - worker-db
+      - network-db
       - network-cache
     environment:
       - SERVER_PORT=8080
-      - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://master-db/postgres
-      - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://master-db/postgres
+      - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db/network
+      - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://network-db/network
       - SPRING_DATA_REDIS_HOST=network-cache
 
-  master-db:
-    image: "citusdata/citus:12.1.2"
-    ports: [ "${COORDINATOR_EXTERNAL_PORT:-5432}:5432" ]
-    labels: [ "com.citusdata.role=Master" ]
-    environment: &AUTH
-      POSTGRES_USER: "${POSTGRES_USER:-postgres}"
+  network-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: network
       POSTGRES_PASSWORD: network
-      PGUSER: "${POSTGRES_USER:-postgres}"
-      PGPASSWORD: "${POSTGRES_PASSWORD}"
-      POSTGRES_HOST_AUTH_METHOD: "${POSTGRES_HOST_AUTH_METHOD:-trust}"
-    command: [ "postgres", "-c", "wal_level=logical" ]
-
-  worker-db:
-    image: "citusdata/citus:12.1.2"
-    deploy:
-      replicas: 2
-    labels: [ "com.citusdata.role=Worker" ]
-    environment: *AUTH
-    command: [ "postgres", "-c", "wal_level=logical" ]
+    ports:
+      - "5432:5432"
     volumes:
-      - healthcheck-volume:/healthcheck
+      - db-data:/var/lib/postgresql/data
+    restart: unless-stopped
 
   network-cache:
     image: redis:7.2-alpine
@@ -45,4 +33,4 @@ services:
       - "6379:6379"
 
 volumes:
-  healthcheck-volume:
+  db-data:

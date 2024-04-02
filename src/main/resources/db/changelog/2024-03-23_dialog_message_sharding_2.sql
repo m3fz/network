@@ -1,1 +1,0 @@
-select create_distributed_table('dialog_message', 'distribution_hash', shard_count => 3);
