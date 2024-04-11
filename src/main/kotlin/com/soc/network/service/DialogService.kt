@@ -1,6 +1,6 @@
 package com.soc.network.service
 
-import com.soc.network.dao.DialogMessageDao
+import com.soc.network.dao.DialogMessageInMemDao
 import com.soc.network.model.dto.DialogMessageDto
 import com.soc.network.model.entity.DialogMessageEntity
 import org.springframework.stereotype.Service
@@ -8,7 +8,7 @@ import java.util.*
 
 @Service
 class DialogService(
-    private val dialogMessageDao: DialogMessageDao,
+    private val dialogMessageDao: DialogMessageInMemDao,
     private val userService: UserService
 ) {
 

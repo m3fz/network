@@ -57,7 +57,8 @@ class DbFiller(
         val entity = UserEntity(
             username = username,
 //            passwordHash = Base64.getEncoder().encodeToString(username.toByteArray())
-            passwordHash = passwordEncoder.encode(username)
+//            passwordHash = passwordEncoder.encode(username)
+            passwordHash = passwordEncoder.encode("pwd")
         )
         entity.lastname = nameParts[0]
         entity.firstname = nameParts[1]
