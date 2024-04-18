@@ -1,0 +1,15 @@
+server:
+  port: 8081
+
+spring:
+  data:
+    redis:
+      database: 0
+      host: localhost
+      port: 6389
+      password:
+      timeout: 5000
+
+springdoc:
+  api-docs:
+    enabled: true
