@@ -4,17 +4,19 @@ services:
     image: network:0.0.1
     build:
       context: .
-      dockerfile: ./docker/Dockerfile
+      dockerfile: core/docker/Dockerfile
     ports:
       - "8080:8080"
     depends_on:
       - network-db
       - network-cache
+      - dialog-backend
     environment:
       - SERVER_PORT=8080
       - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db/network
       - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://network-db/network
       - SPRING_DATA_REDIS_HOST=network-cache
+      - RESOURCE_DIALOG_BASE_URL=http://dialog-backend:8081
 
   network-db:
     image: postgres:15-alpine
@@ -25,12 +27,30 @@ services:
       - "5432:5432"
     volumes:
       - db-data:/var/lib/postgresql/data
-    restart: unless-stopped
 
   network-cache:
     image: redis:7.2-alpine
     ports:
       - "6379:6379"
+
+  dialog-backend:
+    image: dialog:0.0.1
+    build:
+      context: .
+      dockerfile: dialog/docker/Dockerfile
+    ports:
+      - "8081:8081"
+    depends_on:
+      - dialog-db
+    environment:
+      - SERVER_PORT=8081
+      - SPRING_DATA_REDIS_HOST=dialog-db
+      - SPRING_DATA_REDIS_PORT=6379
+
+  dialog-db:
+    image: redis:7.2-alpine
+    ports:
+      - "6389:6379"
 
 volumes:
   db-data:
