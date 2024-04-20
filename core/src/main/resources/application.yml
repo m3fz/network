@@ -2,6 +2,8 @@ server:
   port: 8080
 
 spring:
+  application:
+    name: network
   datasource:
     master:
       url: jdbc:postgresql://localhost:5432/network?useServerPrepStmts=false&rewriteBatchedStatements=true
@@ -40,5 +42,8 @@ resource:
 springdoc:
   api-docs:
     enabled: true
+
+logging:
+  loki-host: localhost
 
 generate-data: false

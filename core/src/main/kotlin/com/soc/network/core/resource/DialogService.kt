@@ -2,6 +2,7 @@ package com.soc.network.core.resource
 
 import com.soc.network.core.model.dto.DialogMessageDto
 import com.soc.network.core.service.UserService
+import io.github.oshai.kotlinlogging.KotlinLogging
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.http.MediaType
 import org.springframework.stereotype.Service
@@ -14,9 +15,11 @@ class DialogService(
     private val userService: UserService,
     private val restClient: RestClient
 ) {
+    private val logger = KotlinLogging.logger {}
 
     fun sendMessage(receiverUuid: UUID, message: String) {
         val dialogMessage = DialogMessageDto(userService.getCurrentUuid(), receiverUuid, message)
+        logger.info { "${dialogMessage.senderUuid} sending message to ${dialogMessage.receiverUuid}" }
 
         restClient.post()
             .uri("$baseUrl/send")
@@ -27,6 +30,7 @@ class DialogService(
 
     fun getDialogWithUser(userUuid: UUID): Array<DialogMessageDto>? {
         val currentUserUuid = userService.getCurrentUuid()
+        logger.info { "Requesting dialog between: $currentUserUuid and $userUuid" }
 
         return restClient.get()
             .uri("$baseUrl/list?user1=$currentUserUuid&user2=$userUuid")

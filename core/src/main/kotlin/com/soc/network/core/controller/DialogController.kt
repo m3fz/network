@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.*
 
 @RestController
-@RequestMapping("/dialog")
+@RequestMapping("/dialog/v1")
 @SecurityRequirement(name = "basicAuth")
 class DialogController(
     private val dialogService: DialogService

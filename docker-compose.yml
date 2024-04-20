@@ -1,4 +1,5 @@
 version: '3.3'
+
 services:
   network-backend:
     image: network:0.0.1
@@ -17,6 +18,7 @@ services:
       - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://network-db/network
       - SPRING_DATA_REDIS_HOST=network-cache
       - RESOURCE_DIALOG_BASE_URL=http://dialog-backend:8081
+      - LOGGING_LOKI_HOST=loki
 
   network-db:
     image: postgres:15-alpine
@@ -46,11 +48,67 @@ services:
       - SERVER_PORT=8081
       - SPRING_DATA_REDIS_HOST=dialog-db
       - SPRING_DATA_REDIS_PORT=6379
+      - LOGGING_LOKI_HOST=loki
 
   dialog-db:
     image: redis:7.2-alpine
     ports:
       - "6389:6379"
+
+  loki:
+    image: grafana/loki:2.9.0
+    ports:
+      - "3100:3100"
+    command: -config.file=/etc/loki/local-config.yaml
+
+  grafana:
+    environment:
+      - GF_PATHS_PROVISIONING=/etc/grafana/provisioning
+      - GF_AUTH_ANONYMOUS_ENABLED=true
+      - GF_AUTH_ANONYMOUS_ORG_ROLE=Admin
+    entrypoint:
+      - sh
+      - -euc
+      - |
+        mkdir -p /etc/grafana/provisioning/datasources
+        cat <<EOF > /etc/grafana/provisioning/datasources/ds.yaml
+        apiVersion: 1
+        datasources:
+        - name: Loki
+          type: loki
+          access: proxy
+          orgId: 1
+          url: http://loki:3100
+          basicAuth: false
+          isDefault: true
+          version: 1
+          editable: false
+        EOF
+        /run.sh
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+
+#  elasticsearch:
+#    image: docker.elastic.co/elasticsearch/elasticsearch:7.7.0
+#    ports:
+#      - 9300:9300
+#      - 9200:9200
+#
+#  kibana:
+#    image: docker.elastic.co/kibana/kibana:7.7.0
+#    environment:
+#      ELASTICSEARCH_URL: "http://elasticsearch:9300"
+#    ports:
+#      - 5601:5601
+#
+#  logstash:
+#    image: docker.elastic.co/logstash/logstash:7.7.0
+#    command: logstash -f /etc/logstash/conf.d/logstash.conf
+#    volumes:
+#      - ./config:/etc/logstash/conf.d
+#    ports:
+#      - 5000:5000
 
 volumes:
   db-data:

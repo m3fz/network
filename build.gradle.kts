@@ -47,9 +47,13 @@ subprojects {
 
 	dependencies {
 		implementation("org.springframework.boot:spring-boot-starter-web")
+		implementation("org.springframework.boot:spring-boot-starter-actuator")
 		implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
 		implementation("org.jetbrains.kotlin:kotlin-reflect")
 		implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
+		implementation("io.github.oshai:kotlin-logging-jvm:6.0.9")
+		implementation("io.micrometer:micrometer-tracing-bridge-otel")
+		implementation("com.github.loki4j:loki-logback-appender:1.5.1")
 
 		testImplementation("org.springframework.boot:spring-boot-starter-test")
 	}
