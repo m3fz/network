@@ -47,11 +47,7 @@ class UserDao(
     fun findUsersByName(firstname: String, lastname: String): List<UserEntity> {
         val sql = "select * from users where firstname like '$firstname%' and lastname like '$lastname%'"
 
-        return try {
-            roJdbcTemplate.query(sql, userRowMapper)
-        } catch (e: Exception) {
-            emptyList()
-        }
+        return roJdbcTemplate.query(sql, userRowMapper)
     }
 
     @Transactional

@@ -4,14 +4,14 @@ server:
 spring:
   datasource:
     master:
-      url: jdbc:postgresql://localhost:5432/network?useServerPrepStmts=false&rewriteBatchedStatements=true
-      username: network
+      url: jdbc:postgresql://localhost:5432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
+      username: postgres
       password: network
       type: com.zaxxer.hikari.HikariDataSource
       driver-class-name: org.postgresql.Driver
     replica:
-      url: jdbc:postgresql://localhost:5432/network?useServerPrepStmts=false&rewriteBatchedStatements=true
-      username: network
+      url: jdbc:postgresql://localhost:35432/postgres?useServerPrepStmts=false&rewriteBatchedStatements=true
+      username: postgres
       password: network
       type: com.zaxxer.hikari.HikariDataSource
       driver-class-name: org.postgresql.Driver
@@ -37,4 +37,4 @@ springdoc:
   api-docs:
     enabled: true
 
-generate-data: false
+generate-data: true

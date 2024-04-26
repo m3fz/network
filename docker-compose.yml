@@ -1,36 +1,129 @@
 version: '3.3'
+networks:
+  pgnet:
+
 services:
-  network-backend:
+  network-backend-1:
     image: network:0.0.1
     build:
       context: .
       dockerfile: ./docker/Dockerfile
     ports:
       - "8080:8080"
+    networks:
+      - pgnet
     depends_on:
-      - network-db
       - network-cache
+      - network-db-master
+      - haproxy
     environment:
       - SERVER_PORT=8080
-      - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db/network
-      - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://network-db/network
+      - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db-master/postgres
+      - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://haproxy/postgres
       - SPRING_DATA_REDIS_HOST=network-cache
 
-  network-db:
-    image: postgres:15-alpine
-    environment:
-      POSTGRES_USER: network
-      POSTGRES_PASSWORD: network
+  network-backend-2:
+    image: network:0.0.1
     ports:
-      - "5432:5432"
-    volumes:
-      - db-data:/var/lib/postgresql/data
-    restart: unless-stopped
+      - "8081:8080"
+    networks:
+      - pgnet
+    depends_on:
+      - network-backend-1
+      - network-cache
+      - network-db-master
+      - haproxy
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db-master/postgres
+      - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://haproxy/postgres
+      - SPRING_DATA_REDIS_HOST=network-cache
 
   network-cache:
     image: redis:7.2-alpine
     ports:
       - "6379:6379"
+    networks:
+      - pgnet
+
+  network-db-master:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: network
+    ports:
+      - "5432:5432"
+    networks:
+      - pgnet
+    volumes:
+      - db-data-master:/var/lib/postgresql/data
+
+  network-db-slave-1:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: network
+    volumes:
+      - db-data-slave1:/var/lib/postgresql/data
+    networks:
+      - pgnet
+    depends_on:
+      - network-db-master
+
+  network-db-slave-2:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: network
+    volumes:
+      - db-data-slave2:/var/lib/postgresql/data
+    networks:
+      - pgnet
+    depends_on:
+      - network-db-master
+
+  haproxy:
+    image: haproxy:0.0.1
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-haproxy
+    ports:
+      - "7000:7000"
+    networks:
+      - pgnet
+    depends_on:
+      - network-db-slave-1
+      - network-db-slave-2
+
+  nginx:
+    image: nginx:0.0.1
+    build:
+      context: .
+      dockerfile: ./docker/Dockerfile-nginx
+    ports:
+      - "80:80"
+    networks:
+      - pgnet
+    depends_on:
+      - network-backend-1
+      - network-backend-2
 
 volumes:
-  db-data:
+  db-data-master:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/mefz/volumes/pgmaster'
+  db-data-slave1:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/mefz/volumes/pgslave1'
+  db-data-slave2:
+    driver: local
+    driver_opts:
+      type: 'none'
+      o: 'bind'
+      device: '/home/mefz/volumes/pgslave2'
