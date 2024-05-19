@@ -16,7 +16,7 @@ services:
       - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://network-db/network
       - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://network-db/network
       - SPRING_DATA_REDIS_HOST=network-cache
-      - RESOURCE_DIALOG_BASE_URL=http://dialog-backend:8081
+      - RESOURCE_DIALOG_BASE_URL=http://dialog-backend:8080
 
   network-db:
     image: postgres:15-alpine
@@ -39,18 +39,42 @@ services:
       context: .
       dockerfile: dialog/docker/Dockerfile
     ports:
-      - "8081:8081"
+      - "8081:8080"
     depends_on:
       - dialog-db
+      - counter-backend
     environment:
-      - SERVER_PORT=8081
+      - SERVER_PORT=8080
       - SPRING_DATA_REDIS_HOST=dialog-db
       - SPRING_DATA_REDIS_PORT=6379
+      - RESOURCE_COUNTER_BASE_URL=http://counter-backend:8080
 
   dialog-db:
     image: redis:7.2-alpine
     ports:
       - "6389:6379"
+
+  counter-backend:
+    image: counter:0.0.1
+    build:
+      context: .
+      dockerfile: counter/docker/Dockerfile
+    ports:
+      - "8082:8080"
+    depends_on:
+      - counter-db
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_MASTER_URL=jdbc:postgresql://counter-db/network
+      - SPRING_DATASOURCE_REPLICA_URL=jdbc:postgresql://counter-db/network
+
+  counter-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: network
+      POSTGRES_PASSWORD: network
+    ports:
+      - "5442:5432"
 
 volumes:
   db-data:

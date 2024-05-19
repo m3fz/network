@@ -10,6 +10,10 @@ spring:
       password:
       timeout: 5000
 
+resource:
+  counter:
+    base-url: http://localhost:8082
+
 springdoc:
   api-docs:
     enabled: true
