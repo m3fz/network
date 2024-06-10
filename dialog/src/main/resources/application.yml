@@ -1,7 +1,11 @@
 server:
   port: 8081
 
+
+
 spring:
+  application:
+    name: dialog
   data:
     redis:
       database: 0
@@ -17,3 +21,17 @@ resource:
 springdoc:
   api-docs:
     enabled: true
+
+management:
+  server:
+    port: ${server.port}
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, prometheus
+  metrics.distribution.percentiles-histogram:
+    [http.server.requests]: true
+  observations:
+    key-values:
+      application: dialog
+

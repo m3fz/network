@@ -54,6 +54,26 @@ services:
     ports:
       - "6389:6379"
 
+  prometheus:
+    image: prom/prometheus
+    ports:
+      - "9090:9090"
+    volumes:
+      - ./dialog/docker/prometheus.yml:/etc/prometheus/prometheus.yml
+      - prometheus:/prometheus
+
+  grafana:
+    build:
+      context: .
+      dockerfile: dialog/docker/grafana/Dockerfile
+    ports:
+      - "3000:3000"
+    volumes:
+      - grafana:/var/lib/grafana
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
+
   counter-backend:
     image: counter:0.0.1
     build:
@@ -78,3 +98,5 @@ services:
 
 volumes:
   db-data:
+  prometheus:
+  grafana:
